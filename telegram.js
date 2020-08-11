@@ -20,7 +20,8 @@ module.exports = function sendMessage({ text }) {
     });
 
     res.on('end', function () {
-      console.log(JSON.parse(response));
+      // TODO Обработать ответ
+      // console.log(response);
     });
   }).end();
 };

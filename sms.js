@@ -28,7 +28,8 @@ module.exports = function sendSms({ text }) {
     });
 
     res.on('end', function () {
-      console.log(response);
+      // TODO Обработать ответ
+      // console.log(response);
     });
   }).end();
 };
