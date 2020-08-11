@@ -1,0 +1,16 @@
+{
+  "sms": {
+    "sender": "allservice",
+    "phone": "",
+    "publicKey": "",
+    "privateKey": ""
+  },
+  "telegram": {
+    "token": "",
+    "chatId": ""
+  },
+  "channels": {
+    "sms": true,
+    "telegram": true
+  }
+}
