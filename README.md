@@ -8,6 +8,8 @@
     ```bash
     cp config.example.json config.json
     ```
+   Открываем файл `config.json` на редактирование в любимом редакторе.
+1. Добавляем **authCookie**. Значение куки которую устанавливает Кабанчик после успешной авторизации. Можно найти в `Dev Tools → Storage → Cookies → "auth"`.
 2. Настраиваем отправку SMS. Заходим в аккаунт https://atomic.center/settings/ → API. Копируем и добавляем в конфиг публичный и приватный ключи.
 ```
 "sms": {
@@ -34,11 +36,10 @@
 
 ### Использование
 ```bash
-node index.js auth_cookie category
+node index.js category
 ```
 
 ### Параметры:
-- **auth_cookie** - Значение куки которую устанавливает Кабанчик после успешной авторизации. Можно найти в `Dev Tools → Storage → Cookies → "auth"`.
 - **category** - Идентификатор отслеживаемой категории.
     Можно найти в `Dev Tools → Network` открыв нужную категорию. Искать в запросе `all-tasks`.
     ```
@@ -47,7 +48,7 @@ node index.js auth_cookie category
     ```
 ### Пример
 ```bash
-node index.js xyz 212
+node index.js 212
 ```
 
 ### Дополнительная информация

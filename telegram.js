@@ -2,7 +2,9 @@ const http = require('https');
 const { stringify } = require('querystring');
 const { telegram: { token, chatId } } = require('./config.json');
 
-module.exports = function sendMessage({ text }) {
+module.exports = sendMessage;
+
+function sendMessage({ text }) {
   if (!token || !chatId) {
     return;
   }
@@ -10,7 +12,7 @@ module.exports = function sendMessage({ text }) {
   const options = {
     method: 'post',
     host: 'api.telegram.org',
-    path: `/bot${token}/sendMessage?chat_id=${chatId}&${stringify({ text })}`,
+    path: `/bot${token}/sendMessage?chat_id=1${chatId}&${stringify({ text })}`,
   };
 
   http.request(options, function (res) {
@@ -20,8 +22,11 @@ module.exports = function sendMessage({ text }) {
     });
 
     res.on('end', function () {
-      // TODO Обработать ответ
-      // console.log(response);
+      if (res.statusCode !== 200) {
+        const { description } = JSON.parse(response);
+
+        console.log('[telegram]', description);
+      }
     });
   }).end();
-};
+}

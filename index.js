@@ -1,32 +1,26 @@
 const fs = require('fs');
 const http = require('https');
-const { channels } = require('./config.json');
+const { authCookie, channels, checkInterval } = require('./config.json');
 const sms = require('./sms');
 const telegram = require('./telegram');
-const authCookie = process.argv[2];
-const category = +process.argv[3];
+const category = +process.argv[2];
 
-const writeCheckedTasks = (tasks = []) => fs.writeFileSync('./tasks-' + category + '.json', JSON.stringify([...tasks], null, 2), 'utf8');
-const readCheckedTasks = () => {
-  try {
-    return new Set(JSON.parse(fs.readFileSync('./tasks-' + category + '.json', 'utf8')));
-  } catch (e) {
-    return new Set();
-  }
-};
+// При первом запуске собираем новые задачи без отправки уведомлений
+let isFirstCheck = true;
 
+//
+// Пример использования программы
+//
 const cmdExample = `
 Использование:
-  node index.js auth_cookie category
+  node index.js category
 
 Параметры:
-  auth_cookie - Значение куки которую устанавливает Кабанчик после успешной авторизации.
-                Можно найти в Dev Tools → Storage → Cookies → "auth".
-  category    - Идентификатор отслеживаемой категории.
-                https://kiev.kabanchik.ua/cabinet/all-tasks?page=1&category=212
-                                                                            ^^^
+  category - Идентификатор отслеживаемой категории.
+             https://kiev.kabanchik.ua/cabinet/all-tasks?page=1&category=212
+                                                                         ^^^
 Пример:
-  node index.js xyz 212
+  node index.js 212
 `;
 
 if (!authCookie) {
@@ -43,13 +37,14 @@ if (!category) {
   process.exit();
 }
 
-if (!fs.existsSync('./tasks-' + category + '.json')) {
+if (!fs.existsSync(`./tasks-${category}.json`)) {
   writeCheckedTasks();
 }
 
 //
-// URL: https://kiev.kabanchik.ua/cabinet/all-tasks?page=1&category=212
+// Старт процесса проверки на новые задачи
 //
+check();
 
 function checkForNewTasks({ authCookie, category }) {
   let checkedTasks = readCheckedTasks();
@@ -107,27 +102,36 @@ function checkForNewTasks({ authCookie, category }) {
   });
 }
 
-let isFirstCheck = true;
-
 function check() {
-  checkForNewTasks({ authCookie, category }).then((tasks) => {
-    if (tasks.length > 0) {
-      console.log(new Date(), `Найдены новые задачи: ${tasks.length}`);
+  checkForNewTasks({ authCookie, category })
+    .then((tasks) => {
+      console.log(tasks);
 
-      if (!isFirstCheck) {
-        notify(tasks);
+      if (tasks.length > 0) {
+        console.log(new Date(), `Найдены новые задачи: ${tasks.length}`);
+
+        if (!isFirstCheck) {
+          notify(tasks);
+        }
       }
-    }
 
-    isFirstCheck = false;
-  });
+      isFirstCheck = false;
+    })
+    .finally(() => {
+      setTimeout(function () {
+        check();
 
-  setTimeout(function () {
-    check();
-  }, 5 * 60 * 1000); // Проверяем на новые задачи раз в 5 мин
+        // Проверяем на новые задачи раз в n минут.
+        // Случайное значение от "checkInterval.min" до "checkInterval.max".
+        // По умолчанию в интервале от 2 до 5 мин.
+      }, rand(checkInterval.min, checkInterval.max) * 60 * 1000);
+    });
 }
 
 function notify(tasks) {
+  //
+  // Отправляем уведомления в Телеграм, если включен канал
+  //
   if (channels.telegram) {
     telegram({ text: 'Найдены новые задания' });
 
@@ -140,6 +144,9 @@ ${task.cost}`;
     telegram({ text });
   }
 
+  //
+  // Отправляем уведомления на телефон как СМС, если включен канал
+  //
   if (channels.sms) {
     const text = tasks.map(task => task.url).join('\n');
 
@@ -147,7 +154,21 @@ ${task.cost}`;
   }
 }
 
-//
-// Старт процесса проверки на новые задачи
-//
-check();
+function writeCheckedTasks(tasks = []) {
+  return fs.writeFileSync(`./tasks-${category}.json`, JSON.stringify([...tasks], null, 2), 'utf8');
+}
+
+function readCheckedTasks() {
+  try {
+    return new Set(JSON.parse(fs.readFileSync(`./tasks-${category}.json`, 'utf8')));
+  } catch (e) {
+    return new Set();
+  }
+}
+
+function rand(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}

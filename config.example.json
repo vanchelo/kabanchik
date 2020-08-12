@@ -1,4 +1,9 @@
 {
+  "authCookie": "",
+  "checkInterval": {
+    "min": 2,
+    "max": 5
+  },
   "sms": {
     "sender": "allservice",
     "phone": "",

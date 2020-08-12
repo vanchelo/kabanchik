@@ -3,9 +3,13 @@ const crypto = require('crypto');
 const querystring = require('querystring');
 const { sms: { publicKey, privateKey, sender, phone } } = require('./config.json');
 
-// http://api.atompark.com/api/sms/3.0/sendSMS?key=public_key&sum=control_sum&sender=Info&text=Testing%20SMS&phone=380972920383&datetime=&sms_lifetime=0
+module.exports = sendSms;
 
-module.exports = function sendSms({ text }) {
+function sendSms({ text }) {
+  if (!publicKey || !privateKey || !sender || !phone) {
+    return;
+  }
+
   const data = { text, phone, sender, action: 'sendSMS' };
   const params = querystring.stringify({
     key: publicKey,
@@ -28,17 +32,15 @@ module.exports = function sendSms({ text }) {
     });
 
     res.on('end', function () {
-      // TODO Обработать ответ
-      // console.log(response);
+      const { error } = JSON.parse(response);
+      if (error) {
+        console.log('[sms]', error);
+      }
     });
   }).end();
-};
+}
 
 function controlSum(data) {
-  if (!publicKey || !privateKey || !sender || !phone) {
-    return;
-  }
-
   data = {
     version: '3.0',
     key: publicKey,
