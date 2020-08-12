@@ -59,8 +59,18 @@ function checkForNewTasks({ authCookie, category }) {
     host: 'kiev.kabanchik.ua',
     path: `/cabinet/all-tasks?page=1&category=${category}`,
     headers: {
+      'accept': 'application/json, text/plain, */*',
+      'accept-language': 'ru,en-US;q=0.9,en;q=0.8,uk;q=0.7',
+      'cache-control': 'no-cache',
+      'pragma': 'no-cache',
+      'sec-fetch-dest': 'empty',
+      'sec-fetch-mode': 'cors',
+      'sec-fetch-site': 'same-origin',
       'x-requested-with': 'XMLHttpRequest',
-      cookie: `auth=${authCookie}`,
+      'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36',
+      'referrer': 'https://kiev.kabanchik.ua/cabinet/category/santehnik',
+      'referrerPolicy': 'no-referrer-when-downgrade',
+      'cookie': `auth=${authCookie}`,
     },
   };
 
@@ -76,7 +86,7 @@ function checkForNewTasks({ authCookie, category }) {
         try {
           result = JSON.parse(response);
         } catch (e) {
-          console.log('Нужно обновить куку авторизации!');
+          console.log('Необходимо обновить куку авторизации!');
 
           process.exit();
         }
@@ -87,7 +97,7 @@ function checkForNewTasks({ authCookie, category }) {
         const newTasks = notArchivedTasks
           .filter(({ id }) => !checkedTasks.has(id));
 
-        checkedTasks = new Set([...checkedTasks, ...newTasks.map(task => task.id)]);
+        checkedTasks = new Set([...checkedTasks, ...newTasks.map(({ id }) => id)]);
 
         writeCheckedTasks(checkedTasks);
 
