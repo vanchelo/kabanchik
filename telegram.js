@@ -12,7 +12,7 @@ function sendMessage({ text }) {
   const options = {
     method: 'post',
     host: 'api.telegram.org',
-    path: `/bot${token}/sendMessage?chat_id=1${chatId}&${stringify({ text })}`,
+    path: `/bot${token}/sendMessage?chat_id=${chatId}&${stringify({ text })}`,
   };
 
   http.request(options, function (res) {
