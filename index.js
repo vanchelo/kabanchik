@@ -1,8 +1,8 @@
 const fs = require('fs');
 const http = require('https');
 const { authCookie, channels, checkInterval } = require('./config.json');
-const sms = require('./sms');
-const telegram = require('./telegram');
+const { sendMessage: sms } = require('./sms');
+const { sendMessage: telegram } = require('./telegram');
 const category = +process.argv[2];
 
 // При первом запуске собираем новые задачи без отправки уведомлений
@@ -70,46 +70,58 @@ function checkForNewTasks({ authCookie, category }) {
   };
 
   return new Promise(function (resolve) {
-    http.request(options, function (res) {
-      let response = '';
-      res.on('data', function (chunk) {
-        response += chunk;
-      });
+    http
+      .request(options, function (res) {
+        let response = '';
+        res.on('data', function (chunk) {
+          response += chunk;
+        });
 
-      res.on('end', function () {
-        let result;
-        try {
-          result = JSON.parse(response);
-        } catch (e) {
-          console.log('Необходимо обновить куку авторизации!');
+        res
+          .on('end', function () {
+            let result;
+            try {
+              result = JSON.parse(response);
+            } catch (e) {
+              console.log('Необходимо обновить куку авторизации!');
 
-          process.exit();
+              process.exit();
+            }
+
+            const notArchivedTasks = result
+              .items
+              .filter(({ archived }) => !archived);
+            const newTasks = notArchivedTasks
+              .filter(({ id }) => !checkedTasks.has(id));
+
+            checkedTasks = new Set([...checkedTasks, ...newTasks.map(({ id }) => id)]);
+
+            writeCheckedTasks(checkedTasks);
+
+            resolve(newTasks);
+          });
+      })
+      .on('error', ({ code } = { code: 'EUNKNOWN' }) => {
+        if (code === 'ENOTFOUND') {
+          console.log(new Date().toISOString(), 'Нет интернет соединения.');
+        } else {
+          console.log(new Date().toISOString(), 'Неизвестная ошибка: ', code);
         }
 
-        const notArchivedTasks = result
-          .items
-          .filter(({ archived }) => !archived);
-        const newTasks = notArchivedTasks
-          .filter(({ id }) => !checkedTasks.has(id));
-
-        checkedTasks = new Set([...checkedTasks, ...newTasks.map(({ id }) => id)]);
-
-        writeCheckedTasks(checkedTasks);
-
-        resolve(newTasks);
-      });
-    }).end();
+        resolve(null);
+      })
+      .end();
   });
 }
 
 function check() {
   checkForNewTasks({ authCookie, category })
     .then((tasks) => {
-      console.log(tasks);
+      if (tasks == null) {
+        return;
+      }
 
       if (tasks.length > 0) {
-        console.log(new Date(), `Найдены новые задачи: ${tasks.length}`);
-
         if (!isFirstCheck) {
           notify(tasks);
         }
@@ -129,23 +141,22 @@ function check() {
 }
 
 function notify(tasks) {
+  if (channels.console) {
+    console.log(new Date().toISOString());
+    console.log(tasks.map((task) => task.url).join('\n'));
+  }
+
   //
-  // Отправляем уведомления в Телеграм, если включен канал
+  // Отправляем уведомления в Telegram
   //
   if (channels.telegram) {
-    telegram({ text: 'Найдены новые задания' });
-
-    const text = tasks.map((task) => {
-      return `${task.title}
-${task.url}
-${task.cost}`;
-    }).join('\n\n');
+    const text = tasks.map((task) => task.url).join('\n');
 
     telegram({ text });
   }
 
   //
-  // Отправляем уведомления на телефон как СМС, если включен канал
+  // Отправляем уведомления на телефон как СМС
   //
   if (channels.sms) {
     const text = tasks.map(task => task.url).join('\n');

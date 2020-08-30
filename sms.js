@@ -3,9 +3,9 @@ const crypto = require('crypto');
 const querystring = require('querystring');
 const { sms: { publicKey, privateKey, sender, phone } } = require('./config.json');
 
-module.exports = sendSms;
+module.exports = { sendMessage };
 
-function sendSms({ text }) {
+function sendMessage({ text }) {
   if (!publicKey || !privateKey || !sender || !phone) {
     return;
   }
@@ -25,19 +25,30 @@ function sendSms({ text }) {
     path: `/api/sms/3.0/sendSMS?${params}`,
   };
 
-  http.request(options, function (res) {
-    let response = '';
-    res.on('data', function (chunk) {
-      response += chunk;
-    });
+  http
+    .request(options, function (res) {
+      let response = '';
+      res.on('data', function (chunk) {
+        response += chunk;
+      });
 
-    res.on('end', function () {
-      const { error } = JSON.parse(response);
-      if (error) {
-        console.log('[sms]', error);
+      res.on('end', function () {
+        const { error } = JSON.parse(response);
+        if (error) {
+          console.log('[sms]', error);
+        }
+      });
+    })
+    .on('error', ({ code } = { code: 'EUNKNOWN' }) => {
+      if (code === 'ENOTFOUND') {
+        console.log('[sms] Нет интернет соединения.');
+      } else {
+        console.log('[sms] Неизвестная ошибка: ', code);
       }
-    });
-  }).end();
+
+      resolve(null);
+    })
+    .end();
 }
 
 function controlSum(data) {

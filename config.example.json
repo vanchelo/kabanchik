@@ -15,7 +15,8 @@
     "chatId": ""
   },
   "channels": {
-    "sms": true,
-    "telegram": true
+    "console": true,
+    "sms": false,
+    "telegram": false
   }
 }
