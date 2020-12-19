@@ -5,9 +5,9 @@
 
 ### Setup
 1. Clone repository:
-  ```bash
-  git clone git@github.com:vanchelo/kabanchik.git
-  ```
+    ```bash
+    git clone git@github.com:vanchelo/kabanchik.git
+    ```
 1. Create config:
     ```bash
     cp config.example.json config.json
