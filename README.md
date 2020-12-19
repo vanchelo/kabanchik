@@ -1,16 +1,20 @@
 # Kabanchik new tasks notifier
 
-### Требования
+### Requirements
 - Node.js >= 10
 
-### Подготовка
-1. Создаем конфиг.
+### Setup
+1. Clone repository:
+  ```bash
+  git clone git@github.com:vanchelo/kabanchik.git
+  ```
+1. Create config:
     ```bash
     cp config.example.json config.json
     ```
    Открываем файл `config.json` на редактирование в любимом редакторе.
 1. Добавляем **authCookie**. Значение куки которую устанавливает Кабанчик после успешной авторизации. Можно найти в `Dev Tools → Storage → Cookies → "auth"`.
-2. Настраиваем отправку SMS. Заходим в аккаунт `https://atomic.center/settings/` → `API`. Копируем и добавляем в конфиг публичный и приватный ключи.
+1. Настраиваем отправку SMS. Заходим в аккаунт `https://atomic.center/settings/` → `API`. Копируем и добавляем в конфиг публичный и приватный ключи.
 ```
 "sms": {
   "sender": "allservice", <<< Имя отправителя
@@ -19,7 +23,7 @@
   "privateKey": ""        <<< Приватый ключ
 }
 ```
-3. Настраиваем отправку в Telegram.
+1. Настраиваем отправку в Telegram.
 ```
 "telegram": {
   "token": "", <<< Токен телеграм бота
@@ -34,25 +38,29 @@
 }
 ```
 
-### Использование
+### Usage
 ```bash
 node index.js category
 ```
 
-### Параметры:
+### Settings
 - **category** - Идентификатор отслеживаемой категории.
     Можно найти в `Dev Tools → Network` открыв нужную категорию. Искать в запросе `all-tasks`.
     ```
     https://kiev.kabanchik.ua/cabinet/all-tasks?page=1&category=212
                                                                 ^^^
     ```
-### Пример
+### Usage example
 ```bash
 node index.js 212
 ```
 
-### Дополнительная информация
+### Additional info
 
-Категории:
+Categories:
 - 212 - Установка и замена фильтров для воды
 - 1121 - Сантехнические услуги
+
+## License and Copyright
+
+This software released under the terms of the [MIT license](./LICENSE).
