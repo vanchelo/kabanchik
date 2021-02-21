@@ -129,6 +129,9 @@ function check() {
 
       isFirstCheck = false;
     })
+    .catch((e) => {
+      console.log(new Date().toISOString(), 'Неизвестная ошибка: ', e);
+    })
     .finally(() => {
       setTimeout(function () {
         check();
