@@ -56,9 +56,9 @@ function getUpdates() {
       })
       .on('error', ({ code } = { code: 'EUNKNOWN' }) => {
         if (code === 'ENOTFOUND') {
-          console.log('[telegram] Нет интернет соединения.');
+          console.log('[telegram] No internet connection.');
         } else {
-          console.log('[telegram] Неизвестная ошибка: ', code);
+          console.log('[telegram] Unknown error: ', code);
         }
 
         resolve(null);

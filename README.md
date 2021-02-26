@@ -8,33 +8,33 @@
     ```bash
     git clone git@github.com:vanchelo/kabanchik.git
     ```
-1. Create config:
+1. Create a config:
     ```bash
     cp config.example.json config.json
     ```
-   Открываем файл `config.json` на редактирование в любимом редакторе.
-1. Добавляем **authCookie**. Значение куки которую устанавливает Кабанчик после успешной авторизации. Можно найти в `Dev Tools → Storage → Cookies → "auth"`.
-1. Настраиваем отправку SMS. Заходим в аккаунт `https://atomic.center/settings/` → `API`. Копируем и добавляем в конфиг публичный и приватный ключи.
+   Open `config.json` to edit in your favorite editor.
+1. Add **authCookie**. The value of cookie that the Kabanchik sets after successful authorization. You can find it in `Dev Tools → Storage → Cookies → "auth"`.
+1. Set up SMS notifications. Go to the account `https://atomic.center/settings/` → `API`. Copy and add public and private keys to `config.json`.
 ```
 "sms": {
-  "sender": "allservice", <<< Имя отправителя
-  "phone": "",            <<< На какой номер отправлять уведомления
-  "publicKey": "",        <<< Публичный ключ
-  "privateKey": ""        <<< Приватый ключ
+  "sender": "allservice", <<< Sender name
+  "phone": "",            <<< What number to send notifications to
+  "publicKey": "",        <<< Public key
+  "privateKey": ""        <<< Private key
 }
 ```
-1. Настраиваем отправку в Telegram.
+1. Set up Telegram notifications.
 ```
 "telegram": {
-  "token": "", <<< Токен телеграм бота
-  "chatId": "" <<< ID канала, должен быть со знаком "-" в начале. Например, -12345
+  "token": "", <<< Token of the Telegram Bot
+  "chatId": "" <<< The channel ID, must have a "-" at the beginning. For example, -12345
 }
 ```
 
-По умолчанию включены оба канала для отправки уведомлений SMS и Telegram. Для отключения какого-то канала нужно в `config.json` установить соответствующему каналу `false`
+By default, both SMS and Telegram notifications channels are enabled. To disable a channel, set `false` in `config.json` to the corresponding channel
 ```
 "channels": {
-  "sms": false <<< Отключаем отправку SMS
+  "sms": false <<< Disabling SMS notifications
 }
 ```
 
@@ -44,8 +44,8 @@ node index.js category
 ```
 
 ### Settings
-- **category** - Идентификатор отслеживаемой категории.
-    Можно найти в `Dev Tools → Network` открыв нужную категорию. Искать в запросе `all-tasks`.
+- **category** - The identifier of the watched category.
+    Can be found in `Dev Tools → Network` by opening the desired category. Search for `all-tasks`.
     ```
     https://kiev.kabanchik.ua/cabinet/all-tasks?page=1&category=212
                                                                 ^^^
@@ -58,8 +58,8 @@ node index.js 212
 ### Additional info
 
 Categories:
-- 212 - Установка и замена фильтров для воды
-- 1121 - Сантехнические услуги
+- 212 - Installation and replacement of water filters
+- 1121 - Plumbing services
 
 ## License and Copyright
 

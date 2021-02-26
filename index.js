@@ -5,33 +5,33 @@ const { sendMessage: sms } = require('./sms');
 const { sendMessage: telegram } = require('./telegram');
 const category = +process.argv[2];
 
-// При первом запуске собираем новые задачи без отправки уведомлений
+// On the first run, we collect new tasks without sending notifications
 let isFirstCheck = true;
 
 //
-// Пример использования программы
+// Example of usage
 //
 const cmdExample = `
-Использование:
+Usage:
   node index.js category
 
-Параметры:
-  category - Идентификатор отслеживаемой категории.
+Settings:
+  category - The identifier of the watched category.
              https://kiev.kabanchik.ua/cabinet/all-tasks?page=1&category=212
                                                                          ^^^
-Пример:
+Example:
   node index.js 212
 `;
 
 if (!authCookie) {
-  console.log('Не задана кука авторизации!');
+  console.log('The "auth" cookie is not set!');
   console.log(cmdExample);
 
   process.exit();
 }
 
 if (!category) {
-  console.log('Не задана категория!');
+  console.log('The "category" is not set!');
   console.log(cmdExample);
 
   process.exit();
@@ -42,7 +42,7 @@ if (!fs.existsSync(`./tasks-${category}.json`)) {
 }
 
 //
-// Старт процесса проверки на новые задачи
+// Starting the process of checking for new tasks
 //
 check();
 
@@ -83,7 +83,7 @@ function checkForNewTasks({ authCookie, category }) {
             try {
               result = JSON.parse(response);
             } catch (e) {
-              console.log('Необходимо обновить куку авторизации!');
+              console.log('You need to update the "auth" cookie!');
 
               process.exit();
             }
@@ -103,9 +103,9 @@ function checkForNewTasks({ authCookie, category }) {
       })
       .on('error', ({ code } = { code: 'EUNKNOWN' }) => {
         if (code === 'ENOTFOUND') {
-          console.log(new Date().toISOString(), 'Нет интернет соединения.');
+          console.log(new Date().toISOString(), 'No internet connection.');
         } else {
-          console.log(new Date().toISOString(), 'Неизвестная ошибка: ', code);
+          console.log(new Date().toISOString(), 'Unknown error: ', code);
         }
 
         resolve(null);
@@ -130,15 +130,15 @@ function check() {
       isFirstCheck = false;
     })
     .catch((e) => {
-      console.log(new Date().toISOString(), 'Неизвестная ошибка: ', e);
+      console.log(new Date().toISOString(), 'Unknown error: ', e);
     })
     .finally(() => {
       setTimeout(function () {
         check();
 
-        // Проверяем на новые задачи раз в n минут.
-        // Случайное значение от "checkInterval.min" до "checkInterval.max".
-        // По умолчанию в интервале от 2 до 5 мин.
+        // Check for new tasks every n minutes.
+        // Random value from "checkInterval.min" to "checkInterval.max".
+        // The default value is between 2 and 5 minutes.
       }, rand(checkInterval.min, checkInterval.max) * 60 * 1000);
     });
 }
@@ -150,7 +150,7 @@ function notify(tasks) {
   }
 
   //
-  // Отправляем уведомления в Telegram
+  // Sending notifications to Telegram
   //
   if (channels.telegram) {
     const text = tasks.map((task) => task.url).join('\n');
@@ -159,7 +159,7 @@ function notify(tasks) {
   }
 
   //
-  // Отправляем уведомления на телефон как СМС
+  // Sending an SMS notifications
   //
   if (channels.sms) {
     const text = tasks.map(task => task.url).join('\n');

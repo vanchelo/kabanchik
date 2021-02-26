@@ -41,9 +41,9 @@ function sendMessage({ text }) {
     })
     .on('error', ({ code } = { code: 'EUNKNOWN' }) => {
       if (code === 'ENOTFOUND') {
-        console.log('[sms] Нет интернет соединения.');
+        console.log('[sms] No internet connection.');
       } else {
-        console.log('[sms] Неизвестная ошибка: ', code);
+        console.log('[sms] Unknown error: ', code);
       }
 
       resolve(null);
