@@ -17,8 +17,8 @@ Usage:
 
 Settings:
   category - The identifier of the watched category.
-             https://kiev.kabanchik.ua/cabinet/all-tasks?page=1&category=212
-                                                                         ^^^
+             https://kiev.kabanchik.ua/ua/cabinet/all-tasks?page=1&category=212
+                                                                            ^^^
 Example:
   node index.js 212
 `;
@@ -52,20 +52,22 @@ function checkForNewTasks({ authCookie, category }) {
   const options = {
     type: 'get',
     host: 'kiev.kabanchik.ua',
-    path: `/cabinet/all-tasks?page=1&category=${category}`,
+    path: `/ua/cabinet/all-tasks?page=1&category=${category}`,
     headers: {
-      'accept': 'application/json, text/plain, */*',
-      'accept-language': 'ru,en-US;q=0.9,en;q=0.8,uk;q=0.7',
-      'cache-control': 'no-cache',
-      'pragma': 'no-cache',
-      'sec-fetch-dest': 'empty',
-      'sec-fetch-mode': 'cors',
-      'sec-fetch-site': 'same-origin',
-      'x-requested-with': 'XMLHttpRequest',
-      'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36',
-      'referrer': 'https://kiev.kabanchik.ua/cabinet/category/santehnik',
-      'referrerPolicy': 'no-referrer-when-downgrade',
-      'cookie': `auth=${authCookie}`,
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv : 103.0) Gecko/20100101 Firefox/103.0',
+      'Accept': 'application/json, text/plain, */*',
+      'Accept-Language': 'ru,en-US;q=0.9,en;q=0.8,uk;q=0.7',
+      'X-Requested-With': 'XMLHttpRequest',
+      'DNT': '1',
+      'Sec-Fetch-Dest': 'empty',
+      'Sec-Fetch-Mode': 'cors',
+      'Sec-Fetch-Site': 'same-origin',
+      'Sec-GPS': '1',
+      'Referrer': 'https://kiev.kabanchik.ua/ua/cabinet/category/santehnik',
+      'Cookie': `auth=${authCookie}`,
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache',
+      'TE': 'trailers',
     },
   };
 
