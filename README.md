@@ -13,7 +13,7 @@
     cp config.example.json config.json
     ```
    Open `config.json` to edit in your favorite editor.
-1. Add **authCookie**. The value of cookie that the Kabanchik sets after successful authorization. You can find it in `Dev Tools → Storage → Cookies → "auth"`.
+1. Add **authCookie** and **sessionCookie**. The value of cookie that the Kabanchik sets after successful authorization. You can find it in `Dev Tools → Storage → Cookies → "auth" and "session"`.
 1. Set up SMS notifications. Go to the account `https://atomic.center/settings/` → `API`. Copy and add public and private keys to `config.json`.
 ```
 "sms": {

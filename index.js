@@ -1,6 +1,6 @@
 const fs = require('fs');
 const http = require('https');
-const { authCookie, channels, checkInterval } = require('./config.json');
+const { authCookie, sessionCookie, channels, checkInterval } = require('./config.json');
 const { sendMessage: sms } = require('./sms');
 const { sendMessage: telegram } = require('./telegram');
 const category = +process.argv[2];
@@ -24,7 +24,14 @@ Example:
 `;
 
 if (!authCookie) {
-  console.log('The "auth" cookie is not set!');
+  console.log('The "authCookie" cookie is not set!');
+  console.log(cmdExample);
+
+  process.exit();
+}
+
+if (!sessionCookie) {
+  console.log('The "sessionCookie" cookie is not set!');
   console.log(cmdExample);
 
   process.exit();
@@ -46,7 +53,7 @@ if (!fs.existsSync(`./tasks-${category}.json`)) {
 //
 check();
 
-function checkForNewTasks({ authCookie, category }) {
+function checkForNewTasks({ authCookie, sessionCookie, category }) {
   let checkedTasks = readCheckedTasks();
 
   const options = {
@@ -54,7 +61,7 @@ function checkForNewTasks({ authCookie, category }) {
     host: 'kiev.kabanchik.ua',
     path: `/ua/cabinet/all-tasks?page=1&category=${category}`,
     headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv : 103.0) Gecko/20100101 Firefox/103.0',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv : 112.0) Gecko/20100101 Firefox/112.0',
       'Accept': 'application/json, text/plain, */*',
       'Accept-Language': 'ru,en-US;q=0.9,en;q=0.8,uk;q=0.7',
       'X-Requested-With': 'XMLHttpRequest',
@@ -64,7 +71,7 @@ function checkForNewTasks({ authCookie, category }) {
       'Sec-Fetch-Site': 'same-origin',
       'Sec-GPS': '1',
       'Referrer': 'https://kiev.kabanchik.ua/ua/cabinet/category/santehnik',
-      'Cookie': `auth=${authCookie}`,
+      'Cookie': `session=${sessionCookie}; auth=${authCookie}`,
       'Cache-Control': 'no-cache',
       'Pragma': 'no-cache',
       'TE': 'trailers',
@@ -117,7 +124,7 @@ function checkForNewTasks({ authCookie, category }) {
 }
 
 function check() {
-  checkForNewTasks({ authCookie, category })
+  checkForNewTasks({ authCookie, sessionCookie, category })
     .then((tasks) => {
       if (tasks == null) {
         return;
